@@ -24,7 +24,7 @@ except ImportError:  # Python 3 # pragma: no cover
     from urllib.parse import quote_plus
     from urllib.request import Request, urlopen
 
-    str_types = (str,)
+    str_types = (str, )
     text = str
 
 # gevent monkey patched environment check
@@ -39,7 +39,6 @@ try:  # pragma: no cover
         from time import sleep
 except (ImportError, AttributeError):  # pragma: no cover
     from time import sleep
-
 
 try:
     urlopen_args = inspect.getfullargspec(urlopen).kwonlyargs
@@ -65,20 +64,18 @@ def get(url, verify_ssl=True):
                     context = None
 
                 with contextlib.closing(
-                    urlopen(
-                        request,
-                        timeout=settings.HTTP_TIMEOUT,
-                        context=context,
-                    )
-                ) as response:
+                        urlopen(
+                            request,
+                            timeout=settings.HTTP_TIMEOUT,
+                            context=context,
+                        )) as response:
                     return response.read()
             else:  # ssl context is not supported ;(
                 with contextlib.closing(
-                    urlopen(
-                        request,
-                        timeout=settings.HTTP_TIMEOUT,
-                    )
-                ) as response:
+                        urlopen(
+                            request,
+                            timeout=settings.HTTP_TIMEOUT,
+                        )) as response:
                     return response.read()
         except (URLError, OSError) as exc:
             logger.debug(
@@ -109,7 +106,9 @@ def get_browsers(verify_ssl=True):
     pattern = r'\.asp">(.+?)<'
     browsers = re.findall(pattern, html, re.UNICODE)
 
-    browsers = [settings.OVERRIDES.get(browser, browser) for browser in browsers]
+    browsers = [
+        settings.OVERRIDES.get(browser, browser) for browser in browsers
+    ]
 
     pattern = r'td\sclass="right">(.+?)\s'
     browsers_statistics = re.findall(pattern, html, re.UNICODE)
@@ -145,8 +144,7 @@ def get_browser_versions(browser, verify_ssl=True):
 
     if not browsers:
         raise FakeUserAgentError(
-            "No browsers version found for {browser}".format(browser=browser)
-        )
+            "No browsers version found for {browser}".format(browser=browser))
 
     return browsers
 
@@ -183,7 +181,8 @@ def load(use_cache_server=True, verify_ssl=True):
             raise exc
 
         logger.warning(
-            "Error occurred during loading data. " "Trying to use cache server %s",
+            "Error occurred during loading data. "
+            "Trying to use cache server %s",
             settings.CACHE_SERVER,
             exc_info=exc,
         )
@@ -192,8 +191,7 @@ def load(use_cache_server=True, verify_ssl=True):
                 get(
                     settings.CACHE_SERVER,
                     verify_ssl=verify_ssl,
-                ).decode("utf-8")
-            )
+                ).decode("utf-8"))
         except (TypeError, ValueError):
             raise FakeUserAgentError("Can not load data from cache server")
     else:
@@ -210,7 +208,8 @@ def load(use_cache_server=True, verify_ssl=True):
             raise FakeUserAgentError("Missing data param: ", param)
 
         if not isinstance(ret[param], dict):
-            raise FakeUserAgentError("Data param is not dictionary", ret[param])  # noqa
+            raise FakeUserAgentError("Data param is not dictionary",
+                                     ret[param])  # noqa
 
         if not ret[param]:
             raise FakeUserAgentError("Data param is empty", ret[param])
